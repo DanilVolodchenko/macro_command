@@ -1,3 +1,5 @@
+import math
+
 from interfaces import ICommand, IMovingObj, IRotatingObj, IFuelObj
 from exceptions import CommandException
 
@@ -43,10 +45,19 @@ class BurnFuelCommand(ICommand):
         self.obj.fuel -= self.obj.consumption
 
 
-class MacroCommand:
-    def __init__(self, commands: list[ICommand]) -> None:
-        self.commands = commands
+class ChangeVelocityCommand(ICommand):
+    """Объект изменения вектора мгновенной скорости."""
+
+    def __init__(self, moving_obj: IMovingObj, rotate_obj: IRotatingObj) -> None:
+        self.moving_obj = moving_obj
+        self.rotate_obj = rotate_obj
 
     def execute(self) -> None:
-        for command in self.commands:
-            command.execute()
+        """Изменение вектора мгновенной скорости."""
+
+        v_dx = self.moving_obj.velocity.dx
+        v_dy = self.moving_obj.velocity.dy
+        angle = self.rotate_obj.angle
+
+        dx = v_dx * math.cos(angle) - v_dy * math.sin(angle)
+        dy = v_dx * math.sin(angle) + v_dy * math.cos(angle)

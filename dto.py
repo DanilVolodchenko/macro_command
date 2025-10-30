@@ -11,7 +11,7 @@ class Point:
         return Point(self.x + velocity.dx, self.y + velocity.dy)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Velocity:
     dx: float
     dy: float
