@@ -4,7 +4,44 @@ from unittest.mock import Mock
 import pytest
 
 from interfaces import IMovingObj, IRotatingObj, IFuelObj
-from dto import Velocity, Fuel
+from dto import Velocity, Fuel, Point, Consumption
+
+
+@pytest.fixture
+def mock_moving__fuel_obj():
+    class Ship(IMovingObj, IFuelObj):
+
+        def __init__(self, location: Point, velocity: Velocity, fuel: Fuel, consumption: Consumption) -> None:
+            self.__location = location
+            self.__velocity = velocity
+            self.__fuel = fuel
+            self.__consumption = consumption
+
+        @property
+        def location(self) -> Point:
+            return self.__location
+
+        @location.setter
+        def location(self, new_value: Point) -> None:
+            self.__location = new_value
+
+        @property
+        def velocity(self) -> Velocity:
+            return self.__velocity
+
+        @property
+        def fuel(self) -> float:
+            return self.__fuel
+
+        @fuel.setter
+        def fuel(self, new_value: float) -> None:
+            self.__fuel = new_value
+
+        @property
+        def consumption(self) -> float:
+            return self.__consumption
+
+    return Ship(Point(0, 0), Velocity(2, 3), 27, 13)
 
 
 @pytest.fixture

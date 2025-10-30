@@ -5,6 +5,7 @@ import pytest
 
 from interfaces import IMovingObj, IRotatingObj, IFuelObj
 from dto import Point, Velocity
+from macro_commands import MacroCommand
 from commands import MoveCommand, RotateCommand, CheckFuelCommand, BurnFuelCommand
 from exceptions import CommandException
 
@@ -180,3 +181,42 @@ class TestBurnFuelCommand:
         with pytest.raises(TypeError):
             mock_fuel_obj = rotating_mock_obj_without_ability_set_angle()
             CheckFuelCommand(mock_fuel_obj).execute()
+
+
+class TestMacroCommand:
+
+    def test_without_exc(self, mock_moving__fuel_obj) -> None:
+        """Тестирование списка команд."""
+
+        commands = [
+            CheckFuelCommand(mock_moving__fuel_obj),
+            MoveCommand(mock_moving__fuel_obj),
+            BurnFuelCommand(mock_moving__fuel_obj),
+            CheckFuelCommand(mock_moving__fuel_obj),
+            MoveCommand(mock_moving__fuel_obj),
+            BurnFuelCommand(mock_moving__fuel_obj),
+        ]
+
+        MacroCommand(commands).execute()
+
+        result = mock_moving__fuel_obj.fuel
+
+        expected_result = 1
+
+        assert result == expected_result, f'Ожидаемый результат: {expected_result}, полученный результат: {result}'
+
+    def test_with_exc(self, mock_moving__fuel_obj):
+        commands = [
+            CheckFuelCommand(mock_moving__fuel_obj),
+            MoveCommand(mock_moving__fuel_obj),
+            BurnFuelCommand(mock_moving__fuel_obj),
+            CheckFuelCommand(mock_moving__fuel_obj),
+            MoveCommand(mock_moving__fuel_obj),
+            BurnFuelCommand(mock_moving__fuel_obj),
+            CheckFuelCommand(mock_moving__fuel_obj),
+            MoveCommand(mock_moving__fuel_obj),
+            BurnFuelCommand(mock_moving__fuel_obj),
+        ]
+
+        with pytest.raises(CommandException):
+            MacroCommand(commands).execute()
