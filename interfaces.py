@@ -35,8 +35,8 @@ class IRotatingObj(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def angle(self) -> Degree:
-        """Возвращает угол."""
+    def angle(self) -> Radian:
+        """Возвращает угол поворота."""
 
     @angle.setter
     @abc.abstractmethod
@@ -65,3 +65,22 @@ class IFuelObj(abc.ABC):
     @abc.abstractmethod
     def consumption(self) -> Consumption:
         """Скорость расхода топлива."""
+
+
+class IChangeVelocityObj(abc.ABC):
+    """Интерфейс для изменения вектора мгновенной скорости."""
+
+    @property
+    @abc.abstractmethod
+    def angle(self) -> Radian:
+        """Возвращает угол поворота."""
+
+    @property
+    @abc.abstractmethod
+    def velocity(self) -> Velocity:
+        """Возвращает мгновенную скорость объекта."""
+
+    @velocity.setter
+    @abc.abstractmethod
+    def velocity(self, new_value: Velocity) -> None:
+        """Переопределяет вектор мгновенной скорости."""

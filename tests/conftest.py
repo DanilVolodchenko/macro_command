@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from interfaces import IMovingObj, IRotatingObj, IFuelObj
+from interfaces import IMovingObj, IRotatingObj, IFuelObj, IChangeVelocityObj
 from dto import Velocity, Fuel, Point, Consumption
 
 
@@ -156,3 +156,41 @@ def fuel_mock_obj_without_ability_set_fuel() -> Type[IFuelObj]:
             return Mock()
 
     return MockFuelObj
+
+
+@pytest.fixture
+def change_velocity_mock_obj_without_angle() -> Type[IChangeVelocityObj]:
+    class MockChangeVelocityObj(IChangeVelocityObj):  # noqa
+        @property
+        def velocity(self) -> Mock:
+            return Mock()
+
+        @velocity.setter
+        def velocity(self, new_value: Mock) -> None:
+            self.velocity = new_value
+
+    return MockChangeVelocityObj
+
+
+@pytest.fixture
+def change_velocity_mock_obj_without_velocity() -> Type[IChangeVelocityObj]:
+    class MockChangeVelocityObj(IChangeVelocityObj):  # noqa
+        @property
+        def angle(self) -> Mock:
+            return Mock()
+
+    return MockChangeVelocityObj
+
+
+@pytest.fixture
+def change_velocity_mock_obj_without_ability_set_velocity() -> Type[IChangeVelocityObj]:
+    class MockChangeVelocityObj(IChangeVelocityObj):  # noqa
+        @property
+        def angle(self) -> Mock:
+            return Mock()
+
+        @property
+        def velocity(self) -> Mock:
+            return Mock()
+
+    return MockChangeVelocityObj

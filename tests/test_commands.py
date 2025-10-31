@@ -3,10 +3,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from interfaces import IMovingObj, IRotatingObj, IFuelObj
+from interfaces import IMovingObj, IRotatingObj, IFuelObj, IChangeVelocityObj
 from dto import Point, Velocity
 from macro_commands import MacroCommand
-from commands import MoveCommand, RotateCommand, CheckFuelCommand, BurnFuelCommand
+from commands import MoveCommand, RotateCommand, CheckFuelCommand, BurnFuelCommand, ChangeVelocityCommand
 from exceptions import CommandException
 
 
@@ -161,26 +161,69 @@ class TestBurnFuelCommand:
 
         assert result == expected_result, f'Ожидаемый результат: {expected_result}, полученный результат: {result}'
 
-    def test_fuel_obj_without_fuel(self, fuel_mock_obj_without_fuel: Type[IFuelObj]) -> None:
-        """Попытка выполнить поворот без возможности получения угла."""
+    def test_burn_fuel_obj_without_fuel(self, fuel_mock_obj_without_fuel: Type[IFuelObj]) -> None:
+        """Попытка сжечь топливо без возможности получения топлива."""
 
         with pytest.raises(TypeError):
             mock_fuel_obj = fuel_mock_obj_without_fuel()
             CheckFuelCommand(mock_fuel_obj).execute()
 
-    def test_rotate_obj_without_velocity(self, fuel_mock_obj_without_consumption: Type[IFuelObj]) -> None:
-        """Попытка выполнить поворот без возможности получения угловой скорости."""
+    def test_burn_fuel_obj_without_consumption(self, fuel_mock_obj_without_consumption: Type[IFuelObj]) -> None:
+        """Попытка сжечь топливо без возможности получения расхода топлива."""
 
         with pytest.raises(TypeError):
             mock_fuel_obj = fuel_mock_obj_without_consumption()
             CheckFuelCommand(mock_fuel_obj).execute()
 
-    def test_rotate_obj_without_set_fuel(self, rotating_mock_obj_without_ability_set_angle: Type[IFuelObj]) -> None:
-        """Попытка выполнить поворот без возможности изменения угла."""
+    def test_burn_fuel_obj_without_set_fuel(self, fuel_mock_obj_without_ability_set_fuel: Type[IFuelObj]) -> None:
+        """Попытка сжечь топливо без возможности изменения уровня топлива."""
 
         with pytest.raises(TypeError):
-            mock_fuel_obj = rotating_mock_obj_without_ability_set_angle()
+            mock_fuel_obj = fuel_mock_obj_without_ability_set_fuel()
             CheckFuelCommand(mock_fuel_obj).execute()
+
+
+class TestChangeVelocityCommand:
+
+    @pytest.mark.parametrize('angle, expected_result', [
+        (90, Velocity(-6.0, 4.0)), (180, Velocity(-4.0, -6.0)), (270, Velocity(6.0, -4.0)), (360, Velocity(4.0, 6.0))
+    ])
+    def test_change_velocity_command_with_some_degree(self, angle: int, expected_result: Velocity) -> None:
+        """Изменение вектора мгновенной скорости на некоторое кол-во градусов."""
+
+        mock_obj = Mock(angle=angle, velocity=Velocity(4.0, 6.0))
+        ChangeVelocityCommand(mock_obj).execute()
+
+        result = mock_obj.velocity
+
+        assert result == expected_result, f'Ожидаемый результат: {expected_result}, полученный результат: {result}'
+
+    def test_change_velocity_obj_without_angle(
+            self, change_velocity_mock_obj_without_angle: Type[IChangeVelocityObj]
+    ) -> None:
+        """Попытка изменить вектор мгновенной скорости без возможности получения угла."""
+
+        with pytest.raises(TypeError):
+            mock_change_velocity_obj = change_velocity_mock_obj_without_angle()
+            ChangeVelocityCommand(mock_change_velocity_obj).execute()
+
+    def test_change_velocity_obj_without_velocity(
+            self, change_velocity_mock_obj_without_velocity: Type[IChangeVelocityObj]
+    ) -> None:
+        """Попытка изменить вектор мгновенной скорости без возможности получения мгновенной скорости."""
+
+        with pytest.raises(TypeError):
+            mock_change_velocity_obj = change_velocity_mock_obj_without_velocity()
+            ChangeVelocityCommand(mock_change_velocity_obj).execute()
+
+    def test_rotate_obj_without_set_fuel(
+            self, change_velocity_mock_obj_without_ability_set_velocity: Type[IChangeVelocityObj]
+    ) -> None:
+        """Попытка изменить вектор мгновенной скорости поворот без возможности изменения мгновенной скорости."""
+
+        with pytest.raises(TypeError):
+            mock_change_velocity_obj = change_velocity_mock_obj_without_ability_set_velocity()
+            ChangeVelocityCommand(mock_change_velocity_obj).execute()
 
 
 class TestMacroCommand:

@@ -1,7 +1,8 @@
 import math
 
-from interfaces import ICommand, IMovingObj, IRotatingObj, IFuelObj
+from interfaces import ICommand, IMovingObj, IRotatingObj, IFuelObj, IChangeVelocityObj
 from exceptions import CommandException
+from dto import Velocity
 
 
 class MoveCommand(ICommand):
@@ -48,16 +49,17 @@ class BurnFuelCommand(ICommand):
 class ChangeVelocityCommand(ICommand):
     """Объект изменения вектора мгновенной скорости."""
 
-    def __init__(self, moving_obj: IMovingObj, rotate_obj: IRotatingObj) -> None:
-        self.moving_obj = moving_obj
-        self.rotate_obj = rotate_obj
+    def __init__(self, obj: IChangeVelocityObj) -> None:
+        self.obj = obj
 
     def execute(self) -> None:
         """Изменение вектора мгновенной скорости."""
 
-        v_dx = self.moving_obj.velocity.dx
-        v_dy = self.moving_obj.velocity.dy
-        angle = self.rotate_obj.angle
+        dx = self.obj.velocity.dx
+        dy = self.obj.velocity.dy
+        angle_radians = math.radians(self.obj.angle)
 
-        dx = v_dx * math.cos(angle) - v_dy * math.sin(angle)
-        dy = v_dx * math.sin(angle) + v_dy * math.cos(angle)
+        new_dx = dx * math.cos(angle_radians) - dy * math.sin(angle_radians)
+        new_dy = dx * math.sin(angle_radians) + dy * math.cos(angle_radians)
+
+        self.obj.velocity = Velocity(round(new_dx, 10), round(new_dy, 10))
